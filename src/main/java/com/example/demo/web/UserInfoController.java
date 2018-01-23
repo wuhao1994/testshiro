@@ -25,7 +25,7 @@ public class UserInfoController {
     @RequestMapping("/userAdd")
     // @RequiresPermissions("userInfo:add")//权限管理;
     public String userInfoAdd(){
-        return "userInfoAdd";
+        return "user/userAdd";
     }
 
     /**
