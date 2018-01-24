@@ -1,7 +1,6 @@
 package com.example.demo.dao
 
 import com.example.demo.entity.UserInfo
-import org.hibernate.sql.Insert
 import org.springframework.data.jpa.repository.JpaRepository
 
 /**
@@ -9,5 +8,4 @@ import org.springframework.data.jpa.repository.JpaRepository
  */
 interface UserInfoDao extends JpaRepository<UserInfo,Long>{
     UserInfo findByUsername(String username);
-    UserInfo addUser(UserInfo u);
 }

@@ -31,6 +31,8 @@ public class ShiroProjectApplicationTests {
 		String password = "123456";
 		String newword = new SimpleHash("MD5",password,salt,1024).toHex();
         user.setSalt(salt.toHex());
+		user.setPassword(newword);
+		user.setState(new Byte("0"));
         userInfoService.addUserInfo(user);
 	}
 

@@ -18,7 +18,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
     @Override
     public UserInfo addUserInfo(UserInfo userInfo) {
-        return userInfoDao.addUser(userInfo);
+        return userInfoDao.saveAndFlush(userInfo);
     }
 
 
