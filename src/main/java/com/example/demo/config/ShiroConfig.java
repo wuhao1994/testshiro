@@ -1,6 +1,8 @@
 package com.example.demo.config;
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -24,7 +26,7 @@ public class ShiroConfig {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         //拦截器.
-        Map<String,String> filterChainDefinitionMap = new LinkedHashMap<String,String>();
+        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
         // 配置不会被拦截的链接 顺序判断
         filterChainDefinitionMap.put("/static/**", "anon");
         //配置退出 过滤器,其中的具体的退出代码Shiro已经替我们实现了
@@ -43,7 +45,7 @@ public class ShiroConfig {
     }
 
     @Bean
-    public MyShiroRealm myShiroRealm(){
+    public MyShiroRealm myShiroRealm() {
         MyShiroRealm myShiroRealm = new MyShiroRealm();
         myShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
         return myShiroRealm;
@@ -51,20 +53,22 @@ public class ShiroConfig {
 
 
     @Bean
-    public SecurityManager securityManager(){
-        DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();
+    public SecurityManager securityManager() {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(myShiroRealm());
+        securityManager.setCacheManager(ehCacheManager());
         return securityManager;
     }
 
     /**
-     *  开启shiro aop注解支持.
-     *  使用代理方式;所以需要开启代码支持;
+     * 开启shiro aop注解支持.
+     * 使用代理方式;所以需要开启代码支持;
+     *
      * @param securityManager
      * @return
      */
     @Bean
-    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager){
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
@@ -87,19 +91,42 @@ public class ShiroConfig {
 
     /**
      * 配置异常拦截器
+     *
      * @return
      */
-    @Bean(name="simpleMappingExceptionResolver")
+    @Bean(name = "simpleMappingExceptionResolver")
     public SimpleMappingExceptionResolver
     createSimpleMappingExceptionResolver() {
         SimpleMappingExceptionResolver r = new SimpleMappingExceptionResolver();
         Properties mappings = new Properties();
         mappings.setProperty("DatabaseException", "databaseError");//数据库异常处理
-        mappings.setProperty("UnauthorizedException","403");
+        mappings.setProperty("UnauthorizedException", "403");
         r.setExceptionMappings(mappings);  // None by default
         r.setDefaultErrorView("error");    // No default
         r.setExceptionAttribute("ex");     // Default is "exception"
         //r.setWarnLogCategory("example.MvcLogger");     // No default
         return r;
+    }
+
+    /**
+     * shiro缓存管理器;
+     * 需要注入对应的其它的实体类中：
+     * 1、安全管理器：securityManager
+     * 可见securityManager是整个shiro的核心；
+     *
+     * @return
+     */
+
+    @Bean
+    public EhCacheManager ehCacheManager() {
+        System.out.println("ShiroConfiguration.getEhCacheManager()");
+        EhCacheManager cacheManager = new EhCacheManager();
+        cacheManager.setCacheManagerConfigFile("classpath:config/ehcache-shiro.xml");
+        return cacheManager;
+    }
+
+    @Bean
+    public ShiroDialect shiroDialect() {
+        return new ShiroDialect();
     }
 }

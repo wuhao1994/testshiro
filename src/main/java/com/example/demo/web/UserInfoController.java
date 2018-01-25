@@ -34,7 +34,7 @@ public class UserInfoController {
      * @return
      */
     @RequestMapping("/userDel")
-    // @RequiresPermissions("userInfo:del")//权限管理;
+    @RequiresPermissions("userInfo:del")//权限管理;
     public String userDel(){
         return "userInfoDel";
     }
