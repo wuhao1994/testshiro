@@ -1,15 +1,30 @@
 package com.example.demo.web;
 
+import com.example.demo.config.MyShiroRealm;
+import com.example.demo.config.ShiroConfig;
+import com.example.demo.config.ShiroUtil;
+import com.example.demo.entity.UserInfo;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
+import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
+import org.apache.shiro.web.servlet.AbstractShiroFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Controller
 public class HomeController {
+    @Resource
+    MyShiroRealm myShiroRealm;
+    @Autowired
+    ShiroFilterFactoryBean shiroFilterFactoryBean;
     @RequestMapping({"/","/index"})
     public String index(){
         return"/index";
@@ -49,4 +64,16 @@ public class HomeController {
         return "403";
     }
 
+    @RequestMapping("/testshiroIcon")
+    public String testshiroIcon(){
+        return "test";
+    }
+    @RequestMapping("/reloadShiro")
+    public String reloadShiro(){
+        ShiroUtil.reloadAuthorizing(myShiroRealm);
+//        UserInfo user =   (UserInfo)SecurityUtils.getSubject().getPrincipals().getPrimaryPrincipal();
+//        String name = user.getName();
+//        ShiroUtil.clearAuthorizationInfo(name);
+        return "test";
+    }
 }

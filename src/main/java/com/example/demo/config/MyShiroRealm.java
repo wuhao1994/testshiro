@@ -27,12 +27,6 @@ public class MyShiroRealm extends AuthorizingRealm {
         System.out.println("MyShiroRealm.doGetAuthenticationInfo()");
         //获取用户的输入的账号.
         String username = (String)token.getPrincipal();
-        String password = "";
-        char[] passchar = (char[] )token.getCredentials();
-        for (int i=0;i<passchar.length;i++){
-            password += passchar[i];
-        }
-        System.out.println(password);
         //通过username从数据库中查找 User对象，如果找到，没找到.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
         UserInfo userInfo = userInfoService.findByUsername(username);
@@ -41,7 +35,7 @@ public class MyShiroRealm extends AuthorizingRealm {
             return null;
         }
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userInfo, //用户名
+                userInfo, //用户
                 userInfo.getPassword(),//密码
                 ByteSource.Util.bytes(userInfo.getSalt()),//salt=username+salt
                 getName()  //realm name
@@ -52,8 +46,10 @@ public class MyShiroRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         System.out.println("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+        //直接取封装用户信息的AuthenticationInfo 的user里的角色权限，，实际应该重新查询数据库
         UserInfo userInfo  = (UserInfo)principalCollection.getPrimaryPrincipal();
         for(SysRole role:userInfo.getRoleList()){
+            //进行角色的添加和权限的添加。 authorizationInfo.addRole(role.getRole()); authorizationInfo.addStringPermission(p.getPermission());
             authorizationInfo.addRole(role.getRole());
             for(SysPermission p:role.getPermissions()){
                 authorizationInfo.addStringPermission(p.getPermission());

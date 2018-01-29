@@ -1,6 +1,8 @@
 package com.example.demo.web;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,6 +17,7 @@ public class UserInfoController {
     @RequestMapping("/userList")
      @RequiresPermissions("userInfo:view")//权限管理;
     public String userInfo(){
+        Session session =  SecurityUtils.getSubject().getSession();
         System.out.println("1212---------------------------------------");
         return "userInfo";
     }
