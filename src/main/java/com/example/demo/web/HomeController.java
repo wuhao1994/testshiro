@@ -70,10 +70,11 @@ public class HomeController {
     }
     @RequestMapping("/reloadShiro")
     public String reloadShiro(){
-        ShiroUtil.reloadAuthorizing(myShiroRealm);
+     //   ShiroUtil.reloadAuthorizing(myShiroRealm);
+         myShiroRealm.reloadAuthorizing();
 //        UserInfo user =   (UserInfo)SecurityUtils.getSubject().getPrincipals().getPrimaryPrincipal();
 //        String name = user.getName();
 //        ShiroUtil.clearAuthorizationInfo(name);
-        return "test";
+        return "403";
     }
 }
